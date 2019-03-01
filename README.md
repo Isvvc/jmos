@@ -2,6 +2,16 @@
 
 Generating Markdown files for Skyrim mod lists
 
+## Purpose
+
+This application exists for the purpose of helping individuals organize Skyrim mods. This aplication does not handle mod files themsleves like [Mod Organizer](https://github.com/Modorganizer2/modorganizer) does. Instead it allows users to keep track of  mods they might be interested in without necissarily having them installed with their mod manager.
+
+While features are currently very limited, here are some examples of potential uses I envision:
+
+> You like taking screenshots of Skyrim and use a plethora of different mods. There are tons of these avilable that you like to use: various different grass mods, ENBs, character textures, armors, etc. For conflicting mods, such as different ENBs or character textures, you keep a set of images in your organizer for the ones you use so you can compare them and pick which one you want for the shoot. For modular mods like armors, you have hundreds and don't want all installed in the game at once. You look at your list of armor mods with reference pictures and leveling scales and find appropriate ones to install for the shoot.
+
+> You install various different armor mods, balanced or not. They may or may not be craftable in-game and you want to work toward getting them in a playthrough. You keep a list of armors with image references oranized by level so you can pace your progression through the different armors. For craftbale armors, there is a list of all of the crafting materials required to make it so you can work toward that. For other armors, you keep their location in-game or their item IDs so you can acquire them when you reach the appropriate level.
+
 ## Usage
 
 There are no precompiled binaries. Ironically, only macOS and Linux are currently supported. To use, place the `src` folder in a location you want the application to exist in. Download `json.hpp` from [nlohmann/json](https://github.com/nlohmann/json/releases) and place it in the src folder. From the terminal run the command (`generate` may be replaced with whatever name you would like the executable to have):
