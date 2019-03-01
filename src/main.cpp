@@ -8,6 +8,7 @@
 using namespace std;
 using json = nlohmann::json;
 
+// Format a json string for printing
 string p(json input){
 	string text = input;
 	text.erase(
@@ -17,7 +18,7 @@ string p(json input){
 }
 
 int main(){
-	json db, mods, categories;
+	json db, mods, categories, url;
 	int unsigned jsize;
 	ifstream ifile;
 	ofstream ofile;
@@ -36,6 +37,9 @@ int main(){
 		exit(1);
 	}
 
+	url["mod"] = "https://www.nexusmods.com/skyrim/mods/";
+	url["image"] = "https://staticdelivery.nexusmods.com/mods/110/images/";
+
 	ifile>>db;
 	mods		= db["Mods"];
 	categories	= db["Categories"];
@@ -45,20 +49,24 @@ int main(){
 
 	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 		ofile	<<"\n#### "<<it.key()<<"\n\n"
+
 			<< p(it.value()["description"]) <<"\n\n"
-			<<"[Nexus link](https://www.nexusmods.com/skyrim/mods/" << it.value()["id"] << ")\n\n"
-			<<"| Images | ![]("<< "https://staticdelivery.nexusmods.com/mods/110/images/" << p(it.value()["main image"]) <<") |\n"
-			<<"| --- |:---:|\n";
+			<<"[Nexus link](" << p(url["mod"]) << it.value()["id"] << ")\n\n"
+
+		// The below section should be altered to allow for dynamic table column numbers
+			<<"| Images | ![]("<< p(url["image"]) << p(it.value()["main image"]) <<") |\n"
+			<<"| ------ |:---:|\n";
 		{	bool right = false;
 			for(json::iterator jt = it.value()["images"].begin();
-				jt != it.value()["images"].end();
-				++jt, right=!right){
-				ofile<<"| ![]("<< "https://staticdelivery.nexusmods.com/mods/110/images/" << p(jt.value()) <<")";
+					jt != it.value()["images"].end();
+					++jt, right=!right){
+				ofile<<"| ![]("<< p(url["image"]) << p(jt.value()) <<")";
 				if(right){
 					ofile<<" |\n";
 				}
 			}
 		}
+
 		ofile<<"\n\nCategories:\n\n";
 		for(json::iterator jt = it.value()["categories"].begin();
 			jt != it.value()["categories"].end();
