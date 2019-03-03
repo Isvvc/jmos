@@ -17,6 +17,16 @@ string p(json input){
 	return (text=="null")?"":text;
 }
 
+// Check if a json list contains a given string
+bool jsonListContains(json list, string value){
+	for(json::iterator it = list.begin(); it != list.end(); ++it){
+		if(it.value() == value){
+			return true;
+		}
+	}
+	return false;
+}
+
 int main(){
 	json db, mods, categories, url;
 	int unsigned jsize;
@@ -42,8 +52,7 @@ int main(){
 
 	ifile>>db;
 	mods		= db["Mods"];
-	categories	= db["Categories"];
-
+	
 	ofile	<<"# Skyrim\n\n"
 		<<"### Mod list\n\n";
 
@@ -69,10 +78,18 @@ int main(){
 
 		ofile<<"\n\nCategories:\n\n";
 		for(json::iterator jt = it.value()["categories"].begin();
-			jt != it.value()["categories"].end();
-			++jt){
+				jt != it.value()["categories"].end();
+				++jt){
 			ofile<<"+ "<<p(jt.value())<<"\n";
+			if(!jsonListContains(categories, jt.value())){
+				categories.push_back(jt.value());
+			}
 		}
+	}
+
+	ofile <<"\n### Categories\n\n";
+	for(json::iterator it = categories.begin(); it != categories.end(); ++it){
+		ofile<<"+ "<< p(it.value()) <<"\n";
 	}
 
 	cout<<"Markdown generation successful.\n";
