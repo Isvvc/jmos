@@ -27,12 +27,24 @@ bool jsonListContains(json list, string value){
 	return false;
 }
 
-int main(){
+int main(int argc, char* argv[]){
+	if(argc > 2){
+		cout<<"Invalid command-line arguments\n";
+		exit(1);
+	}
+
 	json db, mods, categories, url;
 	int unsigned jsize;
 	ifstream ifile;
 	ofstream ofile;
 	json tmp;
+	string category;
+
+	if(argc == 2){
+		category = argv[1];
+	}
+
+	cout<<"Sorting by category: "<<category<<"\n";
 
 	ifile.open("db.json");
 	if(!ifile.is_open()){
@@ -54,7 +66,8 @@ int main(){
 	mods		= db["Mods"];
 	
 	ofile	<<"# Skyrim\n\n"
-		<<"### Mod list\n\n";
+		<<"## Mods\n\n"
+		<<"### Mod master list\n\n";
 
 	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 		ofile	<<"\n#### "<<it.key()<<"\n\n"
@@ -90,6 +103,13 @@ int main(){
 	ofile <<"\n### Categories\n\n";
 	for(json::iterator it = categories.begin(); it != categories.end(); ++it){
 		ofile<<"+ "<< p(it.value()) <<"\n";
+	}
+
+	ofile <<"\n### "<<category<<"\n\n";
+	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
+		if( jsonListContains(it.value()["categories"], category) ){
+			ofile<<"+ "<<it.key()<<"\n";
+		}
 	}
 
 	cout<<"Markdown generation successful.\n";
