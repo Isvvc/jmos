@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include "json.hpp"
+#include "ini.hpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -45,16 +46,10 @@ int main(int argc, char* argv[]){
 
 	json db, mods, categories, url;
 	int unsigned jsize;
-	ifstream ifile;
+	ifstream ifile, inifile;
 	ofstream ofile;
 	json tmp;
-	string category;
-
-	if(argc == 2){
-		category = argv[1];
-	}
-
-	cout<<"Sorting by category: "<<category<<"\n";
+	string category = "null";
 
 	ifile.open("db.json");
 	if(!ifile.is_open()){
@@ -62,6 +57,11 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
+	inifile.open("config.ini");
+	if(!inifile.is_open()){
+		cout <<"Could not load config ini.\n";
+		exit(1);
+	}
 
 	ofile.open("mods.md");
 	if(!ofile.is_open()){
@@ -69,16 +69,28 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
+	INI::Parser config(inifile);
+	cout<<"category="<<config.top()["category"]<<"\n";
+	if(config.top()["category"]!=""){
+		category = config.top()["category"];
+	}
+
+	if(argc == 2){
+		category = argv[1];
+	}
+
+	cout<<"Sorting by category: "<<category<<"\n";
+
 	url["mod"] = "https://www.nexusmods.com/skyrim/mods/";
 	url["image"] = "https://staticdelivery.nexusmods.com/mods/110/images/";
 
 	ifile>>db;
-	mods		= db["Mods"];
+	mods = db["Mods"];
 	
 	ofile	<<"# Skyrim\n\n"
 		<<"## Mods\n\n";
 
-	if(argc == 2){
+	if(category!="null"){
 		ofile <<"\n### Category: "<<category<<"\n\n";
 		for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 			if( jsonListContains(it.value()["categories"], category) ){
