@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <ios>
 #include <cstdlib>
 #include <string>
 #include <algorithm>
@@ -48,6 +49,7 @@ int main(int argc, char* argv[]){
 	int unsigned jsize;
 	ifstream ifile, inifile;
 	ofstream ofile;
+	stringstream output;
 	json tmp;
 	string category = "null";
 
@@ -87,21 +89,21 @@ int main(int argc, char* argv[]){
 	ifile>>db;
 	mods = db["Mods"];
 	
-	ofile	<<"# Skyrim\n\n"
+	output	<<"# Skyrim\n\n"
 		<<"## Mods\n\n";
 
 	if(category!="null"){
-		ofile <<"\n### Category: "<<category<<"\n\n";
+		output <<"\n### Category: "<<category<<"\n\n";
 		for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 			if( jsonListContains(it.value()["categories"], category) ){
-				ofile<<"+ ["<<it.key()<<"](#"<<linkify(it.key())<<")\n";
+				output<<"+ ["<<it.key()<<"](#"<<linkify(it.key())<<")\n";
 			}
 		}
 	}
 
-	ofile <<"### Mod master list\n\n";
+	output <<"### Mod master list\n\n";
 	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
-		ofile	<<"\n#### "<<it.key()<<"\n\n"
+		output	<<"\n#### "<<it.key()<<"\n\n"
 
 			<< p(it.value()["description"]) <<"\n\n"
 			<<"[Nexus link](" << p(url["mod"]) << it.value()["id"] << ")\n\n"
@@ -113,28 +115,30 @@ int main(int argc, char* argv[]){
 			for(json::iterator jt = it.value()["images"].begin();
 					jt != it.value()["images"].end();
 					++jt, right=!right){
-				ofile<<"| ![]("<< p(url["image"]) << p(jt.value()) <<")";
+				output<<"| ![]("<< p(url["image"]) << p(jt.value()) <<")";
 				if(right){
-					ofile<<" |\n";
+					output<<" |\n";
 				}
 			}
 		}
 
-		ofile<<"\n\nCategories:\n\n";
+		output<<"\n\nCategories:\n\n";
 		for(json::iterator jt = it.value()["categories"].begin();
 				jt != it.value()["categories"].end();
 				++jt){
-			ofile<<"+ "<<p(jt.value())<<"\n";
+			output<<"+ "<<p(jt.value())<<"\n";
 			if(!jsonListContains(categories, jt.value())){
 				categories.push_back(jt.value());
 			}
 		}
 	}
 
-	ofile <<"\n### Categories\n\n";
+	output <<"\n### Categories\n\n";
 	for(json::iterator it = categories.begin(); it != categories.end(); ++it){
-		ofile<<"+ "<< p(it.value()) <<"\n";
+		output<<"+ "<< p(it.value()) <<"\n";
 	}
+
+	ofile << output.rdbuf();
 
 	cout<<"Markdown generation successful.\n";
 
