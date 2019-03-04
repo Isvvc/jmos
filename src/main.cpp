@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
 	char columns;
 	ifstream ifile, inifile;
 	ofstream ofile;
-	stringstream output, line1, line2;
+	stringstream output;
 	json tmp;
 	string category = "null";
 
@@ -96,16 +96,42 @@ int main(int argc, char* argv[]){
 		<<"## Mods\n\n";
 
 	if(category!="null"){
-		output <<"\n### Category: "<<category<<"\n\n";
+		stringstream line1, line2;
+		char col = 0;
+
+		output	<<"\n### Category: "<<category<<"\n\n";
+		line1	<<"|";
+		line2	<<"|";
+		for(char i = 0; i < columns; i++){
+			line1 <<"   |";
+			line2 <<"---|";
+		}
+		output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
+
+		line1.str(string());
+		line2.str(string());
 		for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 			if( jsonListContains(it.value()["categories"], category) ){
-				output<<"+ ["<<it.key()<<"](#"<<linkify(it.key())<<")\n";
+				line1<<"| ["<<it.key()<<"](#"<<linkify(it.key())<<") ";
+				line2<<"| ![]("<< p(url["image"]) << p(it.value()["main image"]) <<") ";
+				col++;
+				if(col > columns - 1){
+					col = 0;
+					output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
+					line1.str(string());
+					line2.str(string());
+				}
 			}
+		}
+		if(col > 0){
+			output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
 		}
 	}
 
 	output <<"### Mod master list\n\n";
 	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
+		stringstream line1, line2;
+
 		output	<<"\n#### "<<it.key()<<"\n\n"
 
 			<< p(it.value()["description"]) <<"\n\n"
@@ -115,15 +141,15 @@ int main(int argc, char* argv[]){
 		line1	<<"| Images | ![]("<< p(url["image"]) << p(it.value()["main image"]) <<") |";
 		line2	<<"| ------ |:---:|";
 		for(char i = 0; i < (columns - 2); i++){
-			line1 <<" |";
-			line2 <<":---:|";
+			line1 <<"   |";
+			line2 <<"---|";
 		}
 		output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
 		{	char col = 0;
 			for(json::iterator jt = it.value()["images"].begin();
 					jt != it.value()["images"].end();
 					++jt, col = (col == columns - 1) ? 0 : col + 1 ){
-				output<<"| ![]("<< p(url["image"]) << p(jt.value()) <<")";
+				output<<"| ![]("<< p(url["image"]) << p(jt.value()) <<") ";
 				if(col == columns - 1){
 					output<<" |\n";
 				}
