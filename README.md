@@ -20,7 +20,14 @@ Other long-term plans include adding further features to a desktop client. One s
 
 ## Usage
 
-There are no precompiled binaries. Ironically, only macOS and Linux are currently supported. To use, place the `src` folder in a location you want the application to exist in. Download `json.hpp` from [nlohmann/json](https://github.com/nlohmann/json/releases) and place it in the src folder. From the terminal run the command (`generate` may be replaced with whatever name you would like the executable to have):
+There are no precompiled binaries. Ironically, only macOS and Linux are currently supported. To use, place the `src` folder and     `config.ini` file in a location you want the application to exist in. Install dependencies:
+
++ [nlohmann/json](https://github.com/nlohmann/json)
+    + Place `json.hpp` in the `src` folder
++ [Poordeveloper/ini-parser](https://github.com/Poordeveloper/ini-parser)
+    + Place `ini.hpp` in the `src` folder
+
+From the terminal run the command (`generate` may be replaced with whatever name you would like the executable to have):
 
     g++ -std=c++11 src/main.cpp -o generate
 
