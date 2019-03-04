@@ -27,6 +27,16 @@ bool jsonListContains(json list, string value){
 	return false;
 }
 
+// Replaces every space in a sting with a - so it can be used as a header link in Markdown
+string linkify(std::string text) {
+    for(string::iterator it = text.begin(); it != text.end(); ++it) {
+        if(*it == ' ') {
+            *it = '-';
+        }
+    }
+    return text;
+}
+
 int main(int argc, char* argv[]){
 	if(argc > 2){
 		cout<<"Invalid command-line arguments\n";
@@ -66,9 +76,18 @@ int main(int argc, char* argv[]){
 	mods		= db["Mods"];
 	
 	ofile	<<"# Skyrim\n\n"
-		<<"## Mods\n\n"
-		<<"### Mod master list\n\n";
+		<<"## Mods\n\n";
 
+	if(argc == 2){
+		ofile <<"\n### Category: "<<category<<"\n\n";
+		for(json::iterator it = mods.begin(); it != mods.end(); ++it){
+			if( jsonListContains(it.value()["categories"], category) ){
+				ofile<<"+ ["<<it.key()<<"](#"<<linkify(it.key())<<")\n";
+			}
+		}
+	}
+
+	ofile <<"### Mod master list\n\n";
 	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 		ofile	<<"\n#### "<<it.key()<<"\n\n"
 
@@ -103,13 +122,6 @@ int main(int argc, char* argv[]){
 	ofile <<"\n### Categories\n\n";
 	for(json::iterator it = categories.begin(); it != categories.end(); ++it){
 		ofile<<"+ "<< p(it.value()) <<"\n";
-	}
-
-	ofile <<"\n### "<<category<<"\n\n";
-	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
-		if( jsonListContains(it.value()["categories"], category) ){
-			ofile<<"+ "<<it.key()<<"\n";
-		}
 	}
 
 	cout<<"Markdown generation successful.\n";
