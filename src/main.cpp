@@ -47,9 +47,10 @@ int main(int argc, char* argv[]){
 
 	json db, mods, categories, url;
 	int unsigned jsize;
+	char columns;
 	ifstream ifile, inifile;
 	ofstream ofile;
-	stringstream output;
+	stringstream output, line1, line2;
 	json tmp;
 	string category = "null";
 
@@ -83,6 +84,8 @@ int main(int argc, char* argv[]){
 
 	cout<<"Sorting by category: "<<category<<"\n";
 
+	columns = atoi( config.top()["columns"].c_str() );
+
 	url["mod"] = "https://www.nexusmods.com/skyrim/mods/";
 	url["image"] = "https://staticdelivery.nexusmods.com/mods/110/images/";
 
@@ -106,17 +109,22 @@ int main(int argc, char* argv[]){
 		output	<<"\n#### "<<it.key()<<"\n\n"
 
 			<< p(it.value()["description"]) <<"\n\n"
-			<<"[Nexus link](" << p(url["mod"]) << it.value()["id"] << ")\n\n"
+			<<"[Nexus link](" << p(url["mod"]) << it.value()["id"] << ")\n\n";
 
 		// The below section should be altered to allow for dynamic table column numbers
-			<<"| Images | ![]("<< p(url["image"]) << p(it.value()["main image"]) <<") |\n"
-			<<"| ------ |:---:|\n";
-		{	bool right = false;
+		line1	<<"| Images | ![]("<< p(url["image"]) << p(it.value()["main image"]) <<") |";
+		line2	<<"| ------ |:---:|";
+		for(char i = 0; i < (columns - 2); i++){
+			line1 <<" |";
+			line2 <<":---:|";
+		}
+		output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
+		{	char col = 0;
 			for(json::iterator jt = it.value()["images"].begin();
 					jt != it.value()["images"].end();
-					++jt, right=!right){
+					++jt, col = (col == columns - 1) ? 0 : col + 1 ){
 				output<<"| ![]("<< p(url["image"]) << p(jt.value()) <<")";
-				if(right){
+				if(col == columns - 1){
 					output<<" |\n";
 				}
 			}
