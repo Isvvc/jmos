@@ -1,6 +1,6 @@
 # Project-Oghma-Markdown
 
-Generating Markdown files for Skyrim mod lists
+JSON and Markdown organization for Skyrim and other game mod lists 
 
 ## Purpose
 
