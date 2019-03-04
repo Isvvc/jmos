@@ -31,7 +31,7 @@ From the terminal run the command (`generate` may be replaced with whatever name
 
     g++ -std=c++11 src/main.cpp -o generate
 
-Once compiled, run `generate` when you have a `db.json` to be rendered.
+Once compiled, run `generate` when you have a `db.json` to be rendered. This will generate a `mods.md` which can be viewed in a markdown viewer.
 
 ## Database
 
