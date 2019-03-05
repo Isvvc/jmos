@@ -73,7 +73,6 @@ int main(int argc, char* argv[]){
 	}
 
 	INI::Parser config(inifile);
-	cout<<"category="<<config.top()["category"]<<"\n";
 	if(config.top()["category"]!=""){
 		category = config.top()["category"];
 	}
@@ -89,7 +88,7 @@ int main(int argc, char* argv[]){
 	url["mod"] = "https://www.nexusmods.com/skyrim/mods/";
 	url["image"] = "https://staticdelivery.nexusmods.com/mods/110/images/";
 
-	ifile>>db;
+	ifile >> db;
 	mods = db["Mods"];
 	
 	output	<<"# Skyrim\n\n"
@@ -99,7 +98,7 @@ int main(int argc, char* argv[]){
 		stringstream line1, line2;
 		char col = 0;
 
-		output	<<"\n### Category: "<<category<<"\n\n";
+		output	<<"### Category: "<<category<<"\n\n";
 		line1	<<"|";
 		line2	<<"|";
 		for(char i = 0; i < columns; i++){
@@ -137,7 +136,6 @@ int main(int argc, char* argv[]){
 			<< p(it.value()["description"]) <<"\n\n"
 			<<"[Nexus link](" << p(url["mod"]) << it.value()["id"] << ")\n\n";
 
-		// The below section should be altered to allow for dynamic table column numbers
 		line1	<<"| Images | ![]("<< p(url["image"]) << p(it.value()["main image"]) <<") |";
 		line2	<<"| ------ |:---:|";
 		for(char i = 0; i < (columns - 2); i++){
