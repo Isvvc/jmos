@@ -46,11 +46,11 @@ The json dictionary should be structed as such (will likely change in the future
           "id": [Nexusmods ID],
           "author id": [Nexusmods author ID],
           "description": "Description of mod 1",
+          "main image": "nexusmods image",
           "images": [
-            "nexusmods image id.extension",
-            "nexusmods image id.extension"
+            "nexusmods image",
+            "nexusmods image"
           ],
-          "main image": "nexusmods image id.extensio",
           "categories": [
             "Category 1",
             "Category 2"
@@ -60,4 +60,4 @@ The json dictionary should be structed as such (will likely change in the future
       }
     }
 
-**Note on images**: All nexusmods images are hosted after the URL `https://staticdelivery.nexusmods.com/mods/110/images/` and thus only the image name after this needs to be stored. Ex: Image URL `https://staticdelivery.nexusmods.com/mods/110/images/11163-0-1447284824.png` would be stored in the database as `11163-0-1447284824.png`.
+**Note on images**: All nexusmods images are hosted after the URL `https://staticdelivery.nexusmods.com/mods/110/images/` and thus only the image name after this needs to be stored. Ex: Image URL `https://staticdelivery.nexusmods.com/mods/110/images/11163-0-1447284824.png` would be stored in the database as `11163-0-1447284824.png`. The main image should not be included redundantly in the images list.
