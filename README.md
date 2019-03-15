@@ -1,4 +1,4 @@
-# Project-Oghma-Markdown
+# JSON Mod Organization System
 
 JSON and Markdown organization for Skyrim and other game mod lists 
 
