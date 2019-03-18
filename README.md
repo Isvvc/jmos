@@ -20,7 +20,7 @@ Other long-term plans include adding further features to a desktop client. One s
 
 ## Usage
 
-There are no precompiled binaries. Ironically, only macOS and Linux are currently supported. To use, place the `src` folder and     `config.ini` file in a location you want the application to exist in. Install dependencies:
+There are currently no precompiled binaries. Ironically, only macOS and Linux are currently supported. To use, place the `src` folder and     `config.ini` file in a location you want the application to exist in. Install dependencies:
 
 + [nlohmann/json](https://github.com/nlohmann/json)
     + Place `json.hpp` in the `src` folder
@@ -33,31 +33,45 @@ From the terminal run the command (`generate` may be replaced with whatever name
 
 Once compiled, run `generate` when you have a `db.json` to be rendered. This will generate a `mods.md` which can be viewed in a markdown viewer.
 
+### Configuration
+
+JMOS can be configured through the `config.ini` file and sorting can be done at runtime. The `config.ini` settings are explained below:
+
++ `category=` Specify a category to filter by. Is overridden by the runtime argument.
++ `columns=` Specify the number of columns when listing content in a grid.
+
+At runtime, a command-line argument may be used to specify a category to filter by. Example:
+
+    ./generate Armor
+
+This will generate the document with all of the mods that have the _Armor_ category compiled above the mod list. This will override the category specified in the `config.ini`.
+
 ## Database
 
 This project uses json for data storage. There is not yet an official implementation for creating databases. I personally use Shortcuts on iOS with Nexusmods scraping. These shortcuts might be released at a future time.
 
-The json dictionary should be structed as such (will likely change in the future):
+The json dictionary should be structed as such with `"id"` and `"author id"` being the Nexusmods IDs (structure likely change in the future):
 
-    {
-      "Mods": {
-        "Mod 1 name": {
-          "author name": "Author name",
-          "id": [Nexusmods ID],
-          "author id": [Nexusmods author ID],
-          "description": "Description of mod 1",
-          "main image": "nexusmods image",
-          "images": [
-            "nexusmods image",
-            "nexusmods image"
-          ],
-          "categories": [
-            "Category 1",
-            "Category 2"
-          ]
-        }
-        ...
-      }
+```json
+{
+  "Mods": {
+    "Mod 1 name": {
+      "author name": "Author name",
+      "id": 55555,
+      "author id": 5555555,
+      "description": "Description of mod 1",
+      "main image": "nexusmods image",
+      "images": [
+        "nexusmods image",
+        "nexusmods image"
+      ],
+      "categories": [
+        "Category 1",
+        "Category 2"
+      ]
     }
+  }
+}
+```
 
 **Note on images**: All nexusmods images are hosted after the URL `https://staticdelivery.nexusmods.com/mods/110/images/` and thus only the image name after this needs to be stored. Ex: Image URL `https://staticdelivery.nexusmods.com/mods/110/images/11163-0-1447284824.png` would be stored in the database as `11163-0-1447284824.png`. The main image should not be included redundantly in the images list.
