@@ -37,8 +37,9 @@ Once compiled, run `generate` when you have a `db.json` to be rendered. This wil
 
 JMOS can be configured through the `config.ini` file and sorting can be done at runtime. The `config.ini` settings are explained below:
 
-+ `category=` Specify a category to filter by. Is overridden by the runtime argument.
++ `game=` Specify the name of the game based on how it appears in nexusmods URLs.
 + `columns=` Specify the number of columns when listing content in a grid.
++ `category=` Specify a category to filter by. Is overridden by the runtime argument.
 
 At runtime, a command-line argument may be used to specify a category to filter by. Example:
 
