@@ -43,9 +43,9 @@ JMOS can be configured through the `config.ini` file and sorting can be done at 
 + `columns=` Specify the number of columns when listing content in a grid.
 + `category=` Specify a category to filter by. Is overridden by the runtime argument.
 
-At runtime, a command-line argument may be used to specify a category to filter by. Example:
+At runtime, the command-line argument `-c` or `--category` may be used to specify a category to filter by. Example:
 
-    ./generate Armor
+    ./generate -c Armor
 
 This will generate the document with all of the mods that have the _Armor_ category compiled above the mod list. This will override the category specified in the `config.ini`.
 
