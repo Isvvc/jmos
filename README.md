@@ -26,6 +26,8 @@ There are currently no precompiled binaries. Ironically, only macOS and Linux ar
     + Place `json.hpp` in the `src` folder
 + [Poordeveloper/ini-parser](https://github.com/Poordeveloper/ini-parser)
     + Place `ini.hpp` in the `src` folder
++ [jarro2783/cxxopts](https://github.com/jarro2783/cxxopts)
+    + Place `cxxopts.hpp` in the `src` folder
 
 From the terminal run the command (`generate` may be replaced with whatever name you would like the executable to have):
 

@@ -6,11 +6,12 @@
 #include <algorithm>
 #include "json.hpp"
 #include "ini.hpp"
+#include "cxxopts.hpp"
 
 using namespace std;
 using json = nlohmann::json;
 
-string game;
+string game="null";
 
 enum URLs { mod, image };
 
@@ -152,12 +153,32 @@ stringstream categoryList(json& categories){
 	return output;
 }
 
-int main(int argc, char* argv[]){
-	if(argc > 2){
-		cout<<"Invalid command-line arguments\n";
+// cxxopts command line argument parsing
+cxxopts::ParseResult parse(int argc, char* argv[]){
+	try{
+		cxxopts::Options options(argv[0], " - example command line options");
+		options.add_options()
+			("c,category", "Category", cxxopts::value<std::string>())
+			("g,game", "Game", cxxopts::value<std::string>())
+			("h,help", "Print help")
+		;
+
+		options.parse_positional({"input", "output", "positional"});
+		auto result = options.parse(argc, argv);
+
+		if (result.count("help")){
+			std::cout << options.help({""}) << std::endl;
+			exit(0);
+		}
+
+		return result;
+	}catch (const cxxopts::OptionException& e){
+		std::cout << "error parsing options: " << e.what() << std::endl;
 		exit(1);
 	}
+}
 
+int main(int argc, char* argv[]){
 	json db, mods, categories;
 	int unsigned jsize;
 	char columns;
@@ -166,6 +187,9 @@ int main(int argc, char* argv[]){
 	stringstream output;
 	json tmp;
 	string category = "null";
+
+	auto result = parse(argc, argv);
+	auto arguments = result.arguments();
 
 	ifile.open("db.json");
 	if(!ifile.is_open()){
@@ -198,8 +222,8 @@ int main(int argc, char* argv[]){
 		category = config.top()["category"];
 	}
 
-	if(argc == 2){
-		category = argv[1];
+	if(result.count("category")){
+		category = result["category"].as<std::string>();
 	}
 
 	cout<<"Sorting by category: "<<category<<"\n";
