@@ -6,5 +6,9 @@
   "skyrimspecialedition": {
     "id": 1704,
     "name": "Skyrim SE"
+  },
+  "oblivion": {
+    "id": 101,
+    "name": "Oblivion"
   }
 }

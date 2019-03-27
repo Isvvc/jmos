@@ -12,7 +12,6 @@ using namespace std;
 using json = nlohmann::json;
 
 // These global variables get definied at file load in main() and are not modified later
-//string game="null";
 json gameList;
 
 enum URLs { mod, image };
@@ -23,7 +22,7 @@ string url(URLs type, string game){
 	s << gameList[game]["id"];
 
 	switch(type){
-		case mod:	return "https://www.nexusmods.com/" + game + "/mods/";
+		case mod :	return "https://www.nexusmods.com/" + game + "/mods/";
 		case image :	return "https://staticdelivery.nexusmods.com/mods/" + s.str() +"/images/";
 	}
 	return "";
@@ -80,7 +79,8 @@ stringstream filterCategory(json& mods, string& game, string& category, char col
 		line1.str(string());
 		line2.str(string());
 		for(json::iterator it = mods.begin(); it != mods.end(); ++it){
-			if( jsonListContains(it.value()["categories"], category) ){
+			if( !it.value()["id"][game].is_null()
+					&& jsonListContains(it.value()["categories"], category) ){
 				line1<<"| ["<<it.key()<<"](#"<<linkify(it.key())<<") ";
 				line2<<"| ![]("<< p(it.value()["main image"]) <<") ";
 				col++;
@@ -109,46 +109,47 @@ stringstream modMasterList(json& mods, string& game, json& categories, char colu
 		stringstream line1, line2;
 		char col = 0;
 
-		output	<<"\n#### "<<it.key()<<"\n\n"
+		if(!it.value()["id"][game].is_null()){
+			output	<<"\n#### "<<it.key()<<"\n\n"
+				<< p(it.value()["description"]) <<"\n\n";
+			
+			for(json::iterator jt = it.value()["id"].begin();
+					jt != it.value()["id"].end();
+					++jt){
+				output	<<"["<< p(gameList[jt.key()]["name"]) <<" Nexus link]"
+					<<"(" << p(url(mod, jt.key())) << jt.value() << ")\n\n";
+			}
 
-			<< p(it.value()["description"]) <<"\n\n";
-		
-		for(json::iterator jt = it.value()["id"].begin();
-				jt != it.value()["id"].end();
-				++jt){
-			output	<<"["<< p(gameList[jt.key()]["name"]) <<" link]"
-				<<"(" << p(url(mod, jt.key())) << jt.value() << ")\n\n";
-		}
+			line1	<<"| Images | ![]("<< p(it.value()["main image"]) <<") |";
+			line2	<<"| ------ |:---:|";
+			for(char i = 0; i < (columns - 2); i++){
+				line1 <<"   |";
+				line2 <<"---|";
+			}
 
-		line1	<<"| Images | ![]("<< p(it.value()["main image"]) <<") |";
-		line2	<<"| ------ |:---:|";
-		for(char i = 0; i < (columns - 2); i++){
-			line1 <<"   |";
-			line2 <<"---|";
-		}
+			output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
 
-		output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
-
-		for(json::iterator jt = it.value()["images"].begin();
-				jt != it.value()["images"].end();
-				++jt){
-			for(json::iterator kt = it.value()["images"][jt.key()].begin();
-					kt != it.value()["images"][jt.key()].end();
-					++kt, col = (col == columns - 1) ? 0 : col + 1 ){
-				output<<"| ![]("<< p(url(image, jt.key())) << p(kt.value()) <<") ";
-				if(col == columns - 1){
-					output<<" |\n";
+			for(json::iterator jt = it.value()["images"].begin();
+					jt != it.value()["images"].end();
+					++jt){
+				for(json::iterator kt = it.value()["images"][jt.key()].begin();
+						kt != it.value()["images"][jt.key()].end();
+						++kt, col = (col == columns - 1) ? 0 : col + 1 ){
+					output<<"| ![]("<< p(url(image, jt.key())) << p(kt.value()) <<") ";
+					if(col == columns - 1){
+						output<<" |\n";
+					}
 				}
 			}
-		}
 
-		output<<"\n\nCategories:\n\n";
-		for(json::iterator jt = it.value()["categories"].begin();
-				jt != it.value()["categories"].end();
-				++jt){
-			output<<"+ "<<p(jt.value())<<"\n";
-			if(!jsonListContains(categories, jt.value())){
-				categories.push_back(jt.value());
+			output<<"\n\nCategories:\n\n";
+			for(json::iterator jt = it.value()["categories"].begin();
+					jt != it.value()["categories"].end();
+					++jt){
+				output<<"+ "<<p(jt.value())<<"\n";
+				if(!jsonListContains(categories, jt.value())){
+					categories.push_back(jt.value());
+				}
 			}
 		}
 	}
@@ -249,6 +250,10 @@ int main(int argc, char* argv[]){
 		game = config.top()["game"];
 	}
 
+	if(result.count("game")){
+		game = result["game"].as<string>();
+	}
+
 	if(config.top()["category"]!=""){
 		category = config.top()["category"];
 	}
@@ -257,7 +262,8 @@ int main(int argc, char* argv[]){
 		category = result["category"].as<std::string>();
 	}
 
-	cout<<"Sorting by category: "<<category<<"\n";
+	cout<<"JMOS - "<< p(gameList[game]["name"]) <<"\n";
+	cout<<"Sorting by category: "<< category <<"\n";
 
 	columns = atoi( config.top()["columns"].c_str() );
 
