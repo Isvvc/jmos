@@ -82,7 +82,7 @@ stringstream filterCategory(json& mods, string& game, string& category, char col
 		for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 			if( jsonListContains(it.value()["categories"], category) ){
 				line1<<"| ["<<it.key()<<"](#"<<linkify(it.key())<<") ";
-				line2<<"| ![]("<< p(url(image, game)) << p(it.value()["main image"]) <<") ";
+				line2<<"| ![]("<< p(it.value()["main image"]) <<") ";
 				col++;
 				if(col > columns - 1){
 					col = 0;
@@ -107,6 +107,7 @@ stringstream modMasterList(json& mods, string& game, json& categories, char colu
 	output <<"### Mod master list\n\n";
 	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 		stringstream line1, line2;
+		char col = 0;
 
 		output	<<"\n#### "<<it.key()<<"\n\n"
 
@@ -119,18 +120,22 @@ stringstream modMasterList(json& mods, string& game, json& categories, char colu
 				<<"(" << p(url(mod, jt.key())) << jt.value() << ")\n\n";
 		}
 
-		line1	<<"| Images | ![]("<< p(url(image, game)) << p(it.value()["main image"]) <<") |";
+		line1	<<"| Images | ![]("<< p(it.value()["main image"]) <<") |";
 		line2	<<"| ------ |:---:|";
 		for(char i = 0; i < (columns - 2); i++){
 			line1 <<"   |";
 			line2 <<"---|";
 		}
+
 		output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
-		{	char col = 0;
-			for(json::iterator jt = it.value()["images"].begin();
-					jt != it.value()["images"].end();
-					++jt, col = (col == columns - 1) ? 0 : col + 1 ){
-				output<<"| ![]("<< p(url(image, game)) << p(jt.value()) <<") ";
+
+		for(json::iterator jt = it.value()["images"].begin();
+				jt != it.value()["images"].end();
+				++jt){
+			for(json::iterator kt = it.value()["images"][jt.key()].begin();
+					kt != it.value()["images"][jt.key()].end();
+					++kt, col = (col == columns - 1) ? 0 : col + 1 ){
+				output<<"| ![]("<< p(url(image, jt.key())) << p(kt.value()) <<") ";
 				if(col == columns - 1){
 					output<<" |\n";
 				}
