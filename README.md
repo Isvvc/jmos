@@ -20,7 +20,7 @@ Other long-term plans include adding further features to a desktop client. One s
 
 ## Usage
 
-There are currently no precompiled binaries. Ironically, only macOS and Linux are currently supported. To use, place the `src` folder and     `config.ini` file in a location you want the application to exist in. Install dependencies:
+There are currently no precompiled binaries. Ironically, only macOS and Linux are currently supported. To use, place the `src` folder, `gamelist.json` and `config.ini` file in a location you want the application to exist in. Install dependencies:
 
 + [nlohmann/json](https://github.com/nlohmann/json)
     + Place `json.hpp` in the `src` folder
@@ -53,21 +53,29 @@ This will generate the document with all of the mods that have the _Armor_ categ
 
 This project uses json for data storage. There is not yet an official implementation for creating databases. I personally use Shortcuts on iOS with Nexusmods scraping. These shortcuts might be released at a future time.
 
-The json dictionary should be structed as such with `"id"` and `"author id"` being the Nexusmods IDs (structure likely change in the future):
+The json dictionary should be structed as shown below. `"id"` and `"author id"` should be the Nexusmods IDs. Structure likely to change as program develops.
 
 ```json
 {
   "Mods": {
     "Mod 1 name": {
       "author name": "Author name",
-      "id": 55555,
+      "id": {
+        "game1": 55555,
+        "game2": 5555
+      },
       "author id": 5555555,
       "description": "Description of mod 1",
-      "main image": "nexusmods image",
-      "images": [
-        "nexusmods image",
-        "nexusmods image"
-      ],
+      "main image": "full image URL",
+      "images": {
+        "game1": [
+          "nexusmods image",
+          "nexusmods image"
+        ],
+        "game2": [
+          "nexusmods image"
+        ]
+      },
       "categories": [
         "Category 1",
         "Category 2"
@@ -77,4 +85,4 @@ The json dictionary should be structed as such with `"id"` and `"author id"` bei
 }
 ```
 
-**Note on images**: All nexusmods images are hosted after the URL `https://staticdelivery.nexusmods.com/mods/110/images/` and thus only the image name after this needs to be stored. Ex: Image URL `https://staticdelivery.nexusmods.com/mods/110/images/11163-0-1447284824.png` would be stored in the database as `11163-0-1447284824.png`. The main image should not be included redundantly in the images list.
+**Notes**: Games (listed as `"game1"` and `"game2"` in the example) should be the name of the game as seen in Nexusmods URLs. For example, `"skyrim"` or `"skyrimspecialedition"`. All nexusmods images are hosted after the URL `https://staticdelivery.nexusmods.com/mods/`_gameID_`/images/` and thus only the image name after this needs to be stored. Ex: Image URL `https://staticdelivery.nexusmods.com/mods/110/images/11163-0-1447284824.png` would be stored in the database as `11163-0-1447284824.png`. The main image should have its full URL stored and should not be included redundantly in the images list.
