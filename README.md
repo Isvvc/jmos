@@ -49,6 +49,12 @@ At runtime, the command-line argument `-c` or `--category` may be used to specif
 
 This will generate the document with all of the mods that have the _Armor_ category compiled above the mod list. This will override the category specified in the `config.ini`.
 
+### Game List
+
+For a game to be used, it must be in the gamelist.json file. Each game should be a dictionry with the key being the name of the game as seen in nexusmods URLs (the name after `.com/` in a nexusmods URL). The dictionary should have a `"id"` key with the value equal to the Nexusmods ID as seen in image URLs (the number after `/mods/` in a Nexusmods image URL) and a `"name"` key with the value of a display name for the game with proper capitalization and spacing. The current included games list has support for Skyrim, Skyrim Special Edition, and Oblivion.
+
+The easiest way to add a new game manually would be by using a JSON validator such as [DuckDuckGo's](https://duckduckgo.com/?q=json+validator&t=ffab&ia=answer). Paste in your current games list, copy one of the games and paste it below the list (but above the last `}`, and change the values to match the game you want to add.
+
 ## Database
 
 This project uses json for data storage. There is not yet an official implementation for creating databases. I personally use Shortcuts on iOS with Nexusmods scraping. These shortcuts might be released at a future time.
