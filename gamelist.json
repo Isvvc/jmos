@@ -1,0 +1,10 @@
+{
+  "skyrim": {
+    "id": 110,
+    "name": "Skyrim"
+  },
+  "skyrimspecialedition": {
+    "id": 1704,
+    "name": "Skyrim SE"
+  }
+}

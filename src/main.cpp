@@ -11,16 +11,20 @@
 using namespace std;
 using json = nlohmann::json;
 
-string game="null";
+// These global variables get definied at file load in main() and are not modified later
+//string game="null";
+json gameList;
 
 enum URLs { mod, image };
 
 // Basically shorthand for getting commonly-used URLs
-string url(URLs type){
-	string output;
+string url(URLs type, string game){
+	stringstream s;
+	s << gameList[game]["id"];
+
 	switch(type){
 		case mod:	return "https://www.nexusmods.com/" + game + "/mods/";
-		case image :	return "https://staticdelivery.nexusmods.com/mods/110/images/";
+		case image :	return "https://staticdelivery.nexusmods.com/mods/" + s.str() +"/images/";
 	}
 	return "";
 }
@@ -57,7 +61,7 @@ string linkify(std::string text) {
 // The below functions are for printing sections of the document
 
 //// Output a filtered list of all the mods from a given category
-stringstream filterCategory(json& mods, string& category, char columns){
+stringstream filterCategory(json& mods, string& game, string& category, char columns){
 	stringstream output;
 
 	if(category!="null"){
@@ -78,7 +82,7 @@ stringstream filterCategory(json& mods, string& category, char columns){
 		for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 			if( jsonListContains(it.value()["categories"], category) ){
 				line1<<"| ["<<it.key()<<"](#"<<linkify(it.key())<<") ";
-				line2<<"| ![]("<< p(url(image)) << p(it.value()["main image"]) <<") ";
+				line2<<"| ![]("<< p(url(image, game)) << p(it.value()["main image"]) <<") ";
 				col++;
 				if(col > columns - 1){
 					col = 0;
@@ -97,7 +101,7 @@ stringstream filterCategory(json& mods, string& category, char columns){
 }
 
 //// Output a masterlist of all mods
-stringstream modMasterList(json& mods, json& categories, char columns){
+stringstream modMasterList(json& mods, string& game, json& categories, char columns){
 	stringstream output;
 
 	output <<"### Mod master list\n\n";
@@ -106,10 +110,16 @@ stringstream modMasterList(json& mods, json& categories, char columns){
 
 		output	<<"\n#### "<<it.key()<<"\n\n"
 
-			<< p(it.value()["description"]) <<"\n\n"
-			<<"[Nexus link](" << p(url(mod)) << it.value()["id"] << ")\n\n";
+			<< p(it.value()["description"]) <<"\n\n";
+		
+		for(json::iterator jt = it.value()["id"].begin();
+				jt != it.value()["id"].end();
+				++jt){
+			output	<<"["<< p(gameList[jt.key()]["name"]) <<" link]"
+				<<"(" << p(url(mod, jt.key())) << jt.value() << ")\n\n";
+		}
 
-		line1	<<"| Images | ![]("<< p(url(image)) << p(it.value()["main image"]) <<") |";
+		line1	<<"| Images | ![]("<< p(url(image, game)) << p(it.value()["main image"]) <<") |";
 		line2	<<"| ------ |:---:|";
 		for(char i = 0; i < (columns - 2); i++){
 			line1 <<"   |";
@@ -120,7 +130,7 @@ stringstream modMasterList(json& mods, json& categories, char columns){
 			for(json::iterator jt = it.value()["images"].begin();
 					jt != it.value()["images"].end();
 					++jt, col = (col == columns - 1) ? 0 : col + 1 ){
-				output<<"| ![]("<< p(url(image)) << p(jt.value()) <<") ";
+				output<<"| ![]("<< p(url(image, game)) << p(jt.value()) <<") ";
 				if(col == columns - 1){
 					output<<" |\n";
 				}
@@ -182,34 +192,50 @@ int main(int argc, char* argv[]){
 	json db, mods, categories;
 	int unsigned jsize;
 	char columns;
-	ifstream ifile, inifile;
+	ifstream ifile;
 	ofstream ofile;
 	stringstream output;
 	json tmp;
-	string category = "null";
+	string category = "null", game = "null";
 
 	auto result = parse(argc, argv);
 	auto arguments = result.arguments();
 
 	ifile.open("db.json");
 	if(!ifile.is_open()){
-		cout <<"Could not load database.\n";
+		cout <<"Could not load database (db.json).\n";
 		exit(1);
 	}
 
-	inifile.open("config.ini");
-	if(!inifile.is_open()){
-		cout <<"Could not load config ini.\n";
+	ifile >> db;
+	ifile.close();
+	ifile.clear();
+
+	ifile.open("config.ini");
+	if(!ifile.is_open()){
+		cout <<"Could not load config.ini.\n";
 		exit(1);
 	}
+
+	INI::Parser config(ifile);
+	ifile.close();
+	ifile.clear();
+
+	ifile.open("gamelist.json");
+	if(!ifile.is_open()){
+		cout <<"Could not load game list (gamelist.json).\n";
+		exit(1);
+	}
+
+	ifile >> gameList;
+	ifile.close();
+	ifile.clear();
 
 	ofile.open("mods.md");
 	if(!ofile.is_open()){
 		cout <<"Could not load Markdown file.\n";
 		exit(1);
 	}
-
-	INI::Parser config(inifile);
 
 	if(config.top()["game"]==""){
 		cout <<"A game needs to be specified in config.ini\n";
@@ -230,15 +256,14 @@ int main(int argc, char* argv[]){
 
 	columns = atoi( config.top()["columns"].c_str() );
 
-	ifile >> db;
 	mods = db["Mods"];
 	
 	output	<<"# Skyrim\n\n"
 		<<"## Mods\n\n";
 	
-	output << filterCategory(mods, category, columns).rdbuf();
+	output << filterCategory(mods, game, category, columns).rdbuf();
 	
-	output << modMasterList(mods, categories, columns).rdbuf();
+	output << modMasterList(mods, game, categories, columns).rdbuf();
 
 	output << categoryList(categories).rdbuf();
 
