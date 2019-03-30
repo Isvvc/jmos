@@ -3,6 +3,7 @@
 #include <ios>
 #include <cstdlib>
 #include <string>
+#include <sstream>
 #include <algorithm>
 #include "json.hpp"
 #include "ini.hpp"
@@ -60,41 +61,71 @@ string linkify(std::string text) {
 // The below functions are for printing sections of the document
 
 //// Output a filtered list of all the mods from a given category
-stringstream filterCategory(json& mods, string& game, string& category, char columns){
-	stringstream output;
+stringstream filterCategories(json& mods, string& game, json& categoryList, bool OR, char columns){
+	stringstream output, line1, line2;
+	char col = 0;
 
-	if(category!="null"){
-		stringstream line1, line2;
-		char col = 0;
-
-		output	<<"### Category: "<<category<<"\n\n";
-		line1	<<"|";
-		line2	<<"|";
-		for(char i = 0; i < columns; i++){
-			line1 <<"   |";
-			line2 <<"---|";
+	if(categoryList.size() == 1){
+		output <<"### Category: "<<categoryList.begin().value();
+	}else{
+		output <<"### Categories: ";
+		for(json::iterator it = categoryList.begin(); it != categoryList.end(); ++it){
+			output << p(it.value());
+			if (it + 1 != categoryList.end()){
+				output << ", ";
+			}
 		}
-		output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
+	}
+	output<<"\n\n";
 
-		line1.str(string());
-		line2.str(string());
-		for(json::iterator it = mods.begin(); it != mods.end(); ++it){
-			if( !it.value()["id"][game].is_null()
-					&& jsonListContains(it.value()["categories"], category) ){
-				line1<<"| ["<<it.key()<<"](#"<<linkify(it.key())<<") ";
-				line2<<"| ![]("<< p(it.value()["main image"]) <<") ";
-				col++;
-				if(col > columns - 1){
-					col = 0;
-					output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
-					line1.str(string());
-					line2.str(string());
+	if(OR){
+		output <<"All mods that contain any of the listed categories.\n\n";
+	}else{
+		output <<"All mods that contain all of the listed categories.\n\n";
+	}
+
+	line1	<<"|";
+	line2	<<"|";
+	for(char i = 0; i < columns; i++){
+		line1 <<"   |";
+		line2 <<"---|";
+	}
+	output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
+
+	line1.str(string());
+	line2.str(string());
+
+	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
+		bool valid = OR?false:true;
+
+		for(json::iterator jt = categoryList.begin(); jt != categoryList.end(); jt++){
+			if(jsonListContains(it.value()["categories"], jt.value())){
+				if(OR){
+					valid = true;
+					break;
+				}
+			}else{
+				if(!OR){
+					valid = false;
+					break;
 				}
 			}
 		}
-		if(col > 0){
-			output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
+
+		if(valid){
+			line1<<"| ["<<it.key()<<"](#"<<linkify(it.key())<<") ";
+			line2<<"| ![]("<< p(it.value()["main image"]) <<") ";
+			col++;
+			if(col > columns - 1){
+				col = 0;
+				output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
+				line1.str(string());
+				line2.str(string());
+			}
 		}
+	}
+	if(col > 0){
+		output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
 	}
 
 	return output;
@@ -195,13 +226,13 @@ cxxopts::ParseResult parse(int argc, char* argv[]){
 }
 
 int main(int argc, char* argv[]){
-	json db, mods, categories;
+	json db, mods, categoryMasterList, categoryFilterList;
 	int unsigned jsize;
+	bool categoryFilterOR;
 	char columns;
 	ifstream ifile;
 	ofstream ofile;
-	stringstream output;
-	json tmp;
+	stringstream output, csv;
 	string category = "null", game = "null";
 
 	auto result = parse(argc, argv);
@@ -243,27 +274,55 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
-	if(config.top()["game"]==""){
-		cout <<"A game needs to be specified in config.ini\n";
-		exit(1);
-	}else{
-		game = config.top()["game"];
-	}
-
 	if(result.count("game")){
 		game = result["game"].as<string>();
+	}else if(config.top()["game"]!=""){
+		game = config.top()["game"];
+	}else{
+		cout <<"A game needs to be specified in config.ini\n";
+		exit(1);
 	}
 
-	if(config.top()["category"]!=""){
-		category = config.top()["category"];
+	if(config.top()["categoryFilterOR"]=="true"){
+		categoryFilterOR = true;
+	}else if(config.top()["categoryFilterOR"]=="false"){
+		categoryFilterOR = false;
+	}else{
+		cout	<<"categoryFilterOR not specified in config.ini\n"
+			<<"Set it equal to `true` for the list of categories to be OR "
+			<<"filtered or set to `false` for the list to be AND\n";
+		exit(1);
 	}
 
 	if(result.count("category")){
-		category = result["category"].as<std::string>();
+		csv << result["category"].as<std::string>();
+	}else if(config.top()["category"]!=""){
+		csv <<config.top()["category"];
+	}
+
+	while(getline(csv, category, ',')){
+		categoryFilterList.push_back(category);
 	}
 
 	cout<<"JMOS - "<< p(gameList[game]["name"]) <<"\n";
-	cout<<"Sorting by category: "<< category <<"\n";
+	//cout<<"Sorting by category: "<< category <<"\n";
+	
+	if(categoryFilterList.size() == 1){
+		cout <<"Sorting by category: "<<categoryFilterList.begin().value();
+	}else{
+		cout <<"Sorting by categories: ";
+		for(json::iterator it = categoryFilterList.begin(); it != categoryFilterList.end(); ++it){
+			cout << p(it.value());
+			if (it + 1 != categoryFilterList.end()){
+				cout << ", ";
+			}
+		}
+	}
+	if(categoryFilterOR){
+		cout<<" (OR)\n";
+	}else{
+		cout<<" (AND)\n";
+	}
 
 	columns = atoi( config.top()["columns"].c_str() );
 
@@ -272,11 +331,11 @@ int main(int argc, char* argv[]){
 	output	<<"# Skyrim\n\n"
 		<<"## Mods\n\n";
 	
-	output << filterCategory(mods, game, category, columns).rdbuf();
+	output << filterCategories(mods, game, categoryFilterList, categoryFilterOR, columns).rdbuf();
 	
-	output << modMasterList(mods, game, categories, columns).rdbuf();
+	output << modMasterList(mods, game, categoryMasterList, columns).rdbuf();
 
-	output << categoryList(categories).rdbuf();
+	output << categoryList(categoryMasterList).rdbuf();
 
 	ofile << output.rdbuf();
 
