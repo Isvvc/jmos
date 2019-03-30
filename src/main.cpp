@@ -299,12 +299,10 @@ int main(int argc, char* argv[]){
 
 	config.setSection("category filter");
 
-	if(config.getBoolValue("OR") == true){
-		categoryFilterOR = true;
-	}else if(config.getBoolValue("OR") == false ){
-		categoryFilterOR = false;
+	if(config.getStringValue("OR")[0] != '\0'){
+		categoryFilterOR = config.getBoolValue("OR");
 	}else{
-		cout	<<"categoryFilterOR not specified in config.ini\n"
+		cout	<<"[category filter] OR not specified in config.ini\n"
 			<<"Set it equal to `true` for the list of categories to be OR "
 			<<"filtered or set to `false` for the list to be AND\n";
 		exit(1);
