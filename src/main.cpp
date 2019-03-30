@@ -8,6 +8,7 @@
 #include "json.hpp"
 #include "ini.hpp"
 #include "cxxopts.hpp"
+#include "config.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -257,15 +258,8 @@ int main(int argc, char* argv[]){
 	ifile.close();
 	ifile.clear();
 
-	ifile.open("config.ini");
-	if(!ifile.is_open()){
-		cout <<"Could not load config.ini.\n";
-		exit(1);
-	}
-
-	INI::Parser config(ifile);
-	ifile.close();
-	ifile.clear();
+	rude::Config config;
+	config.load("config.ini");
 
 	ifile.open("gamelist.json");
 	if(!ifile.is_open()){
@@ -285,8 +279,8 @@ int main(int argc, char* argv[]){
 
 	if(result.count("game")){
 		game = result["game"].as<string>();
-	}else if(config.top()["game"]!=""){
-		game = config.top()["game"];
+	}else if(config.getStringValue("game")[0] != '\0'){
+		game = config.getStringValue("game");
 	}else{
 		cout <<"A game needs to be specified in config.ini\n";
 		exit(1);
@@ -299,9 +293,9 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
-	if(config.top()["categoryFilterOR"]=="true"){
+	if(config.getBoolValue("categoryFilterOR") == true){
 		categoryFilterOR = true;
-	}else if(config.top()["categoryFilterOR"]=="false"){
+	}else if(config.getBoolValue("categoryFilterOR") == false ){
 		categoryFilterOR = false;
 	}else{
 		cout	<<"categoryFilterOR not specified in config.ini\n"
@@ -312,8 +306,8 @@ int main(int argc, char* argv[]){
 
 	if(result.count("category")){
 		csv << result["category"].as<std::string>();
-	}else if(config.top()["category"]!=""){
-		csv <<config.top()["category"];
+	}else if(config.getStringValue("category")[0] != '\0'){
+		csv <<config.getStringValue("category");
 	}
 
 	while(getline(csv, category, ',')){
@@ -321,7 +315,6 @@ int main(int argc, char* argv[]){
 	}
 
 	cout<<"JMOS - "<< p(gameList[game]["name"]) <<"\n";
-	//cout<<"Sorting by category: "<< category <<"\n";
 	
 	if(categoryFilterList.size() == 1){
 		cout <<"Sorting by category: "<<categoryFilterList.begin().value();
@@ -340,7 +333,7 @@ int main(int argc, char* argv[]){
 		cout<<" (AND)\n";
 	}
 
-	columns = atoi( config.top()["columns"].c_str() );
+	columns = config.getIntValue("columns");
 
 	mods = db["Mods"];
 	
