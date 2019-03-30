@@ -239,7 +239,7 @@ int main(int argc, char* argv[]){
 	json db, mods, categoryMasterList, categoryFilterList;
 	int unsigned jsize;
 	bool categoryFilterOR;
-	char columns;
+	char categoryColumns, generalColumns;
 	ifstream ifile;
 	ofstream ofile;
 	rude::Config config;
@@ -278,6 +278,7 @@ int main(int argc, char* argv[]){
 	}
 
 	config.setSection("general");
+
 	if(result.count("game")){
 		game = result["game"].as<string>();
 	}else if(config.getStringValue("game")[0] != '\0'){
@@ -287,6 +288,8 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
+	generalColumns = config.getIntValue("columns");
+
 	if(!jsonDictContains(gameList, game)){
 		cout	<<"Unrecognized game.\n"
 			<<"Make sure the game name is as shown in Nexusmods URLs "
@@ -295,6 +298,7 @@ int main(int argc, char* argv[]){
 	}
 
 	config.setSection("category filter");
+
 	if(config.getBoolValue("OR") == true){
 		categoryFilterOR = true;
 	}else if(config.getBoolValue("OR") == false ){
@@ -316,6 +320,8 @@ int main(int argc, char* argv[]){
 		categoryFilterList.push_back(category);
 	}
 
+	categoryColumns = config.getIntValue("columns");
+
 	cout<<"JMOS - "<< p(gameList[game]["name"]) <<"\n";
 	
 	if(categoryFilterList.size() == 1){
@@ -335,16 +341,14 @@ int main(int argc, char* argv[]){
 		cout<<" (AND)\n";
 	}
 
-	columns = config.getIntValue("columns");
-
 	mods = db["Mods"];
 	
 	output	<<"# Skyrim\n\n"
 		<<"## Mods\n\n";
 	
-	output << filterCategories(mods, game, categoryFilterList, categoryFilterOR, columns).rdbuf();
+	output << filterCategories(mods, game, categoryFilterList, categoryFilterOR, categoryColumns).rdbuf();
 	
-	output << modMasterList(mods, game, categoryMasterList, columns).rdbuf();
+	output << modMasterList(mods, game, categoryMasterList, generalColumns).rdbuf();
 
 	output << categoryList(categoryMasterList).rdbuf();
 
