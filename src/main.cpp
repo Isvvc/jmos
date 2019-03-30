@@ -242,6 +242,7 @@ int main(int argc, char* argv[]){
 	char columns;
 	ifstream ifile;
 	ofstream ofile;
+	rude::Config config;
 	stringstream output, csv;
 	string category = "null", game = "null";
 
@@ -258,7 +259,6 @@ int main(int argc, char* argv[]){
 	ifile.close();
 	ifile.clear();
 
-	rude::Config config;
 	config.load("config.ini");
 
 	ifile.open("gamelist.json");
@@ -277,6 +277,7 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
+	config.setSection("general");
 	if(result.count("game")){
 		game = result["game"].as<string>();
 	}else if(config.getStringValue("game")[0] != '\0'){
@@ -293,9 +294,10 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
-	if(config.getBoolValue("categoryFilterOR") == true){
+	config.setSection("category filter");
+	if(config.getBoolValue("OR") == true){
 		categoryFilterOR = true;
-	}else if(config.getBoolValue("categoryFilterOR") == false ){
+	}else if(config.getBoolValue("OR") == false ){
 		categoryFilterOR = false;
 	}else{
 		cout	<<"categoryFilterOR not specified in config.ini\n"
