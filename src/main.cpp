@@ -48,6 +48,15 @@ bool jsonListContains(json list, string value){
 	return false;
 }
 
+bool jsonDictContains(json dict, string value){
+	for(json::iterator it = dict.begin(); it != dict.end(); ++it){
+		if(it.key() == value){
+			return true;
+		}
+	}
+	return false;
+}
+
 // Replaces every space in a sting with a - so it can be used as a header link in Markdown
 string linkify(std::string text) {
     for(string::iterator it = text.begin(); it != text.end(); ++it) {
@@ -280,6 +289,13 @@ int main(int argc, char* argv[]){
 		game = config.top()["game"];
 	}else{
 		cout <<"A game needs to be specified in config.ini\n";
+		exit(1);
+	}
+
+	if(!jsonDictContains(gameList, game)){
+		cout	<<"Unrecognized game.\n"
+			<<"Make sure the game name is as shown in Nexusmods URLs "
+			<<"and is configured in gameList.json\n";
 		exit(1);
 	}
 
