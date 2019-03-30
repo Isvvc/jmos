@@ -41,13 +41,14 @@ JMOS can be configured through the `config.ini` file and sorting can be done at 
 
 + `game=` Specify the name of the game based on how it appears in nexusmods URLs.
 + `columns=` Specify the number of columns when listing content in a grid.
-+ `category=` Specify a category to filter by. Is overridden by the runtime argument.
++ `category=` Specify a category to filter by. Use commas, but not spaces, to filter by multiple categories. Is overridden by the runtime argument.
++ `categoryFilterOR=` Specify if mods should be filtered using OR or AND. OR means mods will be shown if they contains _any_ of the listed categories. AND means mods will only be shown if they contain _all_ of the listed categories.
 
-At runtime, the command-line argument `-c` or `--category` may be used to specify a category to filter by. Example:
+At runtime, the command-line argument `-c` or `--category` may be used to specify a category to filter by. As with the `config.ini` option, multiple categories may be specified using commas but not spaces. Example:
 
-    ./generate -c Armor
+    ./generate -c Armor,Realistic
 
-This will generate the document with all of the mods that have the _Armor_ category compiled above the mod list. This will override the category specified in the `config.ini`.
+This will generate the document filtering by both the _Armor_ and _Realistic_ category above the mod list. This will override the category specified in the `config.ini`.
 
 ### Game List
 
