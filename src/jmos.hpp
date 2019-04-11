@@ -28,7 +28,7 @@ public:
 	std::string url(URLs, std::string);
 	std::string getGameName() {return gameList[game]["name"];}
 
-	std::stringstream filterCategories(json&);
+	std::stringstream filterCategories();
 	std::stringstream modMasterList();
 	std::stringstream categoryList();
 
@@ -37,10 +37,11 @@ public:
 	}general;
 
 	class filter : public section{
+	protected:
 		json list;
 	public:
 		bool OR;
-
-		void setList(json&);
+		void setList(std::stringstream&, bool);
+		friend jmos;
 	}category, author;
 };

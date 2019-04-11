@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
 	ifstream ifile;
 	ofstream ofile;
 	rude::Config config;
-	stringstream output, csv;
+	stringstream output, ssInput;
 	string category = "null", game = "null";
 
 	auto result = parse(argc, argv);
@@ -117,19 +117,17 @@ int main(int argc, char* argv[]){
 	}
 
 	if(result.count("category")){
-		csv << result["category"].as<std::string>();
+		ssInput << result["category"].as<std::string>();
 	}else if(config.getStringValue("category")[0] != '\0'){
-		csv <<config.getStringValue("category");
+		ssInput <<config.getStringValue("category");
 	}
 
+	data.category.columns = config.getIntValue("columns");
+/*	
 	while(getline(csv, category, ',')){
 		categoryFilterList.push_back(category);
 	}
 
-	data.category.columns = config.getIntValue("columns");
-
-	cout<<"JMOS - "<< jmos::p(data.getGameName()) <<"\n";
-	
 	if(categoryFilterList.size() == 1){
 		cout <<"Sorting by category: "<<categoryFilterList.begin().value();
 	}else{
@@ -147,10 +145,15 @@ int main(int argc, char* argv[]){
 		cout<<" (AND)\n";
 	}
 
+*/
+	cout<<"JMOS - "<< jmos::p(data.getGameName()) <<"\n";
+
+	data.category.setList(ssInput, true);
+
 	output	<<"# Skyrim\n\n"
 		<<"## Mods\n\n";
 	
-	output << data.filterCategories(categoryFilterList).rdbuf();
+	output << data.filterCategories().rdbuf();
 
 	output << data.modMasterList().rdbuf();
 

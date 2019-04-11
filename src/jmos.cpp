@@ -72,22 +72,45 @@ void jmos::setGameList(json& input){
 	gameList = input;
 }
 
-void jmos::filter::setList(json& input){
-	list = input;
+void jmos::filter::setList(std::stringstream& input, bool print){
+	string value;
+
+	while(getline(input, value, ',')){
+		list.push_back(value);
+	}
+
+	if(print){
+		if(list.size() == 1){
+			cout <<"Sorting by category: "<<list.begin().value();
+		}else{
+			cout <<"Sorting by categories: ";
+			for(json::iterator it = list.begin(); it != list.end(); ++it){
+				cout << jmos::p(it.value());
+				if (it + 1 != list.end()){
+					cout << ", ";
+				}
+			}
+		}
+		if(OR){
+			cout<<" (OR)\n";
+		}else{
+			cout<<" (AND)\n";
+		}
+	}
 }
 
 //// Output a filtered list of all the mods from a given category
-stringstream jmos::filterCategories(json& categoryList){
+stringstream jmos::filterCategories(){
 	stringstream output, line1, line2;
 	char col = 0;
 
-	if(categoryList.size() == 1){
-		output <<"### Category: "<<categoryList.begin().value();
+	if(category.list.size() == 1){
+		output <<"### Category: "<<category.list.begin().value();
 	}else{
 		output <<"### Categories: ";
-		for(json::iterator it = categoryList.begin(); it != categoryList.end(); ++it){
+		for(json::iterator it = category.list.begin(); it != category.list.end(); ++it){
 			output << p(it.value());
-			if (it + 1 != categoryList.end()){
+			if (it + 1 != category.list.end()){
 				output << ", ";
 			}
 		}
@@ -114,7 +137,7 @@ stringstream jmos::filterCategories(json& categoryList){
 	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
 		bool valid = category.OR?false:true;
 
-		for(json::iterator jt = categoryList.begin(); jt != categoryList.end(); jt++){
+		for(json::iterator jt = category.list.begin(); jt != category.list.end(); jt++){
 			if(jsonListContains(it.value()["categories"], jt.value())){
 				if(category.OR){
 					valid = true;
@@ -215,31 +238,4 @@ stringstream jmos::categoryList(){
 
 	return output;
 }
-
-/*
-// cxxopts command line argument parsing
-cxxopts::ParseResult parse(int argc, char* argv[]){
-	try{
-		cxxopts::Options options(argv[0], " - example command line options");
-		options.add_options()
-			("c,category", "Category", cxxopts::value<std::string>())
-			("g,game", "Game", cxxopts::value<std::string>())
-			("h,help", "Print help")
-		;
-
-		options.parse_positional({"input", "output", "positional"});
-		auto result = options.parse(argc, argv);
-
-		if (result.count("help")){
-			std::cout << options.help({""}) << std::endl;
-			exit(0);
-		}
-
-		return result;
-	}catch (const cxxopts::OptionException& e){
-		std::cout << "error parsing options: " << e.what() << std::endl;
-		exit(1);
-	}
-}
-*/
 
