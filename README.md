@@ -26,7 +26,7 @@ There are currently no precompiled binaries. Ironically, only macOS and Linux ar
     + Place `json.hpp` in the `src` folder
 + [RudeConfig](http://rudeserver.com/config/download.html)
     + Place `config.h` and `librudeconfig.a` in the `src` folder
-    + **How to obtain librudeconfig.a**: download the latest source code package and unzip. Run `./configure` in the extracted directory then `make`. Copy the `librudeconfig.a` from the `./libs` folder (will be hidden) to this program's `src` folder.
+    + **How to obtain librudeconfig.a**: download the latest source code package and unzip. Run `./configure` in the extracted directory then `make`. Copy the `librudeconfig.a` from the `.libs` folder (will be hidden) to this program's `src` folder.
 + [jarro2783/cxxopts](https://github.com/jarro2783/cxxopts)
     + Place `cxxopts.hpp` in the `src` folder
 
