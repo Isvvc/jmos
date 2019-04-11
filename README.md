@@ -32,7 +32,7 @@ There are currently no precompiled binaries. Ironically, only macOS and Linux ar
 
 From the terminal run the command (`generate` may be replaced with whatever name you would like the executable to have):
 
-    g++ -std=c++11 src/main.cpp -o generate
+    g++ -std=c++11 src/main.cpp src/jmos.cpp src/librudeconfig.a -o generate
 
 Once compiled, run `generate` when you have a `db.json` to be rendered. This will generate a `mods.md` which can be viewed in a markdown viewer.
 
