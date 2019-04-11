@@ -40,7 +40,7 @@ cxxopts::ParseResult parse(int argc, char* argv[]){
 }
 
 int main(int argc, char* argv[]){
-	json db, categoryFilterList, gameList;
+	json categoryFilterList, jsonInput;
 	bool categoryFilterOR;
 	char categoryColumns, generalColumns;
 	ifstream ifile;
@@ -58,9 +58,10 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
-	ifile >> db;
-	jmos data(db);
-
+	ifile >> jsonInput;
+	jmos data(jsonInput);
+	
+	jsonInput.clear();
 	ifile.close();
 	ifile.clear();
 
@@ -72,9 +73,10 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
-	ifile >> gameList;
-	data.setGameList(gameList);
+	ifile >> jsonInput;
+	data.setGameList(jsonInput);
 
+	jsonInput.clear();
 	ifile.close();
 	ifile.clear();
 
@@ -98,7 +100,7 @@ int main(int argc, char* argv[]){
 
 	generalColumns = config.getIntValue("columns");
 
-	if(!jmos::jsonDictContains(gameList, game)){
+	if(!data.checkGame()){
 		cout	<<"Unrecognized game.\n"
 			<<"Make sure the game name is as shown in Nexusmods URLs "
 			<<"and is configured in gameList.json\n";
@@ -128,7 +130,7 @@ int main(int argc, char* argv[]){
 
 	categoryColumns = config.getIntValue("columns");
 
-	cout<<"JMOS - "<< jmos::p(gameList[game]["name"]) <<"\n";
+	cout<<"JMOS - "<< jmos::p(data.getGameName()) <<"\n";
 	
 	if(categoryFilterList.size() == 1){
 		cout <<"Sorting by category: "<<categoryFilterList.begin().value();

@@ -24,7 +24,10 @@ public:
 	static bool jsonDictContains(json, std::string);
 	static std::string linkify(std::string);
 	
+	bool checkGame() {return jsonDictContains(gameList, game);};
 	std::string url(URLs, std::string);
+	std::string getGameName() {return gameList[game]["name"];}
+
 	std::stringstream filterCategories(json&, bool, char);
 	std::stringstream modMasterList(char);
 	std::stringstream categoryList();
