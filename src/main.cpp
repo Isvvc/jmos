@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
 	ofstream ofile;
 	rude::Config config;
 	stringstream output, ssInput;
-	string category = "null", game = "null";
+	string game;
 
 	auto result = parse(argc, argv);
 	auto arguments = result.arguments();
