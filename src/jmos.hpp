@@ -6,11 +6,9 @@
 using json = nlohmann::json;
 
 class jmos {
-	json gameList;
 	enum URLs { mod, image };
-	
-	json db, mods, categories;
-	std::string game = "null";
+	json db, mods, categories, gameList;
+	std::string game;
 
 public:
 	jmos(json&);
