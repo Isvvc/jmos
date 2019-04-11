@@ -116,15 +116,15 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
-	if(result.count("category")){
-		ssInput << result["category"].as<std::string>();
-	}else if(config.getStringValue("category")[0] != '\0'){
-		ssInput <<config.getStringValue("category");
-	}
-
 	data.category.columns = config.getIntValue("columns");
 
 	cout<<"JMOS - "<< jmos::p(data.getGameName()) <<"\n";
+
+	if(result.count("category")){
+		ssInput << result["category"].as<std::string>();
+	}else if(config.getStringValue("category")[0] != '\0'){
+		ssInput << config.getStringValue("category");
+	}
 
 	data.category.setList(ssInput, true);
 
