@@ -40,7 +40,7 @@ cxxopts::ParseResult parse(int argc, char* argv[]){
 }
 
 int main(int argc, char* argv[]){
-	json categoryFilterList, jsonInput;
+	json jsonInput;
 	ifstream ifile;
 	ofstream ofile;
 	rude::Config config;
@@ -123,29 +123,7 @@ int main(int argc, char* argv[]){
 	}
 
 	data.category.columns = config.getIntValue("columns");
-/*	
-	while(getline(csv, category, ',')){
-		categoryFilterList.push_back(category);
-	}
 
-	if(categoryFilterList.size() == 1){
-		cout <<"Sorting by category: "<<categoryFilterList.begin().value();
-	}else{
-		cout <<"Sorting by categories: ";
-		for(json::iterator it = categoryFilterList.begin(); it != categoryFilterList.end(); ++it){
-			cout << jmos::p(it.value());
-			if (it + 1 != categoryFilterList.end()){
-				cout << ", ";
-			}
-		}
-	}
-	if(data.category.OR){
-		cout<<" (OR)\n";
-	}else{
-		cout<<" (AND)\n";
-	}
-
-*/
 	cout<<"JMOS - "<< jmos::p(data.getGameName()) <<"\n";
 
 	data.category.setList(ssInput, true);

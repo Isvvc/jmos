@@ -9,9 +9,7 @@ class jmos {
 	json gameList;
 	enum URLs { mod, image };
 	
-	json db, mods, categories, categoryFilterList;
-	bool categoryFilterOR;
-	char categoryColumns, generalColumns;
+	json db, mods, categories;
 	std::string game = "null";
 
 public:
