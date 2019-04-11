@@ -41,8 +41,6 @@ cxxopts::ParseResult parse(int argc, char* argv[]){
 
 int main(int argc, char* argv[]){
 	json categoryFilterList, jsonInput;
-	bool categoryFilterOR;
-	char categoryColumns, generalColumns;
 	ifstream ifile;
 	ofstream ofile;
 	rude::Config config;
@@ -98,7 +96,7 @@ int main(int argc, char* argv[]){
 	}
 	data.setGame(game);
 
-	generalColumns = config.getIntValue("columns");
+	data.general.columns = config.getIntValue("columns");
 
 	if(!data.checkGame()){
 		cout	<<"Unrecognized game.\n"
@@ -110,7 +108,7 @@ int main(int argc, char* argv[]){
 	config.setSection("category filter");
 
 	if(config.getStringValue("OR")[0] != '\0'){
-		categoryFilterOR = config.getBoolValue("OR");
+		data.category.OR = config.getBoolValue("OR");
 	}else{
 		cout	<<"[category filter] OR not specified in config.ini\n"
 			<<"Set it equal to `true` for the list of categories to be OR "
@@ -128,7 +126,7 @@ int main(int argc, char* argv[]){
 		categoryFilterList.push_back(category);
 	}
 
-	categoryColumns = config.getIntValue("columns");
+	data.category.columns = config.getIntValue("columns");
 
 	cout<<"JMOS - "<< jmos::p(data.getGameName()) <<"\n";
 	
@@ -143,7 +141,7 @@ int main(int argc, char* argv[]){
 			}
 		}
 	}
-	if(categoryFilterOR){
+	if(data.category.OR){
 		cout<<" (OR)\n";
 	}else{
 		cout<<" (AND)\n";
@@ -152,9 +150,9 @@ int main(int argc, char* argv[]){
 	output	<<"# Skyrim\n\n"
 		<<"## Mods\n\n";
 	
-	output << data.filterCategories(categoryFilterList, categoryFilterOR, categoryColumns).rdbuf();
+	output << data.filterCategories(categoryFilterList).rdbuf();
 
-	output << data.modMasterList(generalColumns).rdbuf();
+	output << data.modMasterList().rdbuf();
 
 	output << data.categoryList().rdbuf();
 

@@ -12,7 +12,7 @@ class jmos {
 	json db, mods, categories, categoryFilterList;
 	bool categoryFilterOR;
 	char categoryColumns, generalColumns;
-	std::string category = "null", game = "null";
+	std::string game = "null";
 
 public:
 	jmos(json&);
@@ -28,7 +28,19 @@ public:
 	std::string url(URLs, std::string);
 	std::string getGameName() {return gameList[game]["name"];}
 
-	std::stringstream filterCategories(json&, bool, char);
-	std::stringstream modMasterList(char);
+	std::stringstream filterCategories(json&);
+	std::stringstream modMasterList();
 	std::stringstream categoryList();
+
+	struct section{
+		char columns;
+	}general;
+
+	class filter : public section{
+		json list;
+	public:
+		bool OR;
+
+		void setList(json&);
+	}category, author;
 };

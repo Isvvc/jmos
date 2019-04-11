@@ -72,8 +72,12 @@ void jmos::setGameList(json& input){
 	gameList = input;
 }
 
+void jmos::filter::setList(json& input){
+	list = input;
+}
+
 //// Output a filtered list of all the mods from a given category
-stringstream jmos::filterCategories(json& categoryList, bool OR, char columns){
+stringstream jmos::filterCategories(json& categoryList){
 	stringstream output, line1, line2;
 	char col = 0;
 
@@ -90,7 +94,7 @@ stringstream jmos::filterCategories(json& categoryList, bool OR, char columns){
 	}
 	output<<"\n\n";
 
-	if(OR){
+	if(category.OR){
 		output <<"All mods that contain any of the listed categories.\n\n";
 	}else{
 		output <<"All mods that contain all of the listed categories.\n\n";
@@ -98,7 +102,7 @@ stringstream jmos::filterCategories(json& categoryList, bool OR, char columns){
 
 	line1	<<"|";
 	line2	<<"|";
-	for(char i = 0; i < columns; i++){
+	for(char i = 0; i < category.columns; i++){
 		line1 <<"   |";
 		line2 <<"---|";
 	}
@@ -108,16 +112,16 @@ stringstream jmos::filterCategories(json& categoryList, bool OR, char columns){
 	line2.str(string());
 
 	for(json::iterator it = mods.begin(); it != mods.end(); ++it){
-		bool valid = OR?false:true;
+		bool valid = category.OR?false:true;
 
 		for(json::iterator jt = categoryList.begin(); jt != categoryList.end(); jt++){
 			if(jsonListContains(it.value()["categories"], jt.value())){
-				if(OR){
+				if(category.OR){
 					valid = true;
 					break;
 				}
 			}else{
-				if(!OR){
+				if(!category.OR){
 					valid = false;
 					break;
 				}
@@ -128,7 +132,7 @@ stringstream jmos::filterCategories(json& categoryList, bool OR, char columns){
 			line1<<"| ["<<it.key()<<"](#"<<linkify(it.key())<<") ";
 			line2<<"| ![]("<< p(it.value()["main image"]) <<") ";
 			col++;
-			if(col > columns - 1){
+			if(col > category.columns - 1){
 				col = 0;
 				output	<< line1.rdbuf() << "\n" << line2.rdbuf() << "\n";
 				line1.str(string());
@@ -144,7 +148,7 @@ stringstream jmos::filterCategories(json& categoryList, bool OR, char columns){
 }
 
 //// Output a masterlist of all mods
-stringstream jmos::modMasterList(char columns){
+stringstream jmos::modMasterList(){
 	stringstream output;
 
 	output <<"### Mod master list\n\n";
@@ -165,7 +169,7 @@ stringstream jmos::modMasterList(char columns){
 
 			line1	<<"| Images | ![]("<< p(it.value()["main image"]) <<") |";
 			line2	<<"| ------ |:---:|";
-			for(char i = 0; i < (columns - 2); i++){
+			for(char i = 0; i < (general.columns - 2); i++){
 				line1 <<"   |";
 				line2 <<"---|";
 			}
@@ -177,9 +181,9 @@ stringstream jmos::modMasterList(char columns){
 					++jt){
 				for(json::iterator kt = it.value()["images"][jt.key()].begin();
 						kt != it.value()["images"][jt.key()].end();
-						++kt, col = (col == columns - 1) ? 0 : col + 1 ){
+						++kt, col = (col == general.columns - 1) ? 0 : col + 1 ){
 					output<<"| ![]("<< p(url(image, jt.key())) << p(kt.value()) <<") ";
-					if(col == columns - 1){
+					if(col == general.columns - 1){
 						output<<" |\n";
 					}
 				}
