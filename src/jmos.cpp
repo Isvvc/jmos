@@ -144,9 +144,7 @@ stringstream jmos::filterCategories(json& categoryList, bool OR, char columns){
 }
 
 //// Output a masterlist of all mods
-stringstream jmos::modMasterList(json& categories, char columns){
-	//std::cout<< mods.dump(2) << endl;
-	
+stringstream jmos::modMasterList(char columns){
 	stringstream output;
 
 	output <<"### Mod master list\n\n";
@@ -202,9 +200,8 @@ stringstream jmos::modMasterList(json& categories, char columns){
 	return output;
 }
 
-/*
 //// List all the categories
-stringstream categoryList(json& categories){
+stringstream jmos::categoryList(){
 	stringstream output;
 
 	output <<"\n## Categories\n\n";
@@ -215,6 +212,7 @@ stringstream categoryList(json& categories){
 	return output;
 }
 
+/*
 // cxxopts command line argument parsing
 cxxopts::ParseResult parse(int argc, char* argv[]){
 	try{

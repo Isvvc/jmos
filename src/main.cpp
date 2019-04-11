@@ -14,18 +14,6 @@
 using namespace std;
 using json = nlohmann::json;
 
-//// List all the categories
-stringstream categoryList(json& categories){
-	stringstream output;
-
-	output <<"\n## Categories\n\n";
-	for(json::iterator it = categories.begin(); it != categories.end(); ++it){
-		output<<"+ "<< jmos::p(it.value()) <<"\n";
-	}
-
-	return output;
-}
-
 // cxxopts command line argument parsing
 cxxopts::ParseResult parse(int argc, char* argv[]){
 	try{
@@ -52,8 +40,7 @@ cxxopts::ParseResult parse(int argc, char* argv[]){
 }
 
 int main(int argc, char* argv[]){
-	json db, /*mods,*/ categoryMasterList, categoryFilterList, gameList;
-	//int unsigned jsize;
+	json db, categoryFilterList, gameList;
 	bool categoryFilterOR;
 	char categoryColumns, generalColumns;
 	ifstream ifile;
@@ -160,20 +147,14 @@ int main(int argc, char* argv[]){
 		cout<<" (AND)\n";
 	}
 
-	//mods = data.db["Mods"];
-	
 	output	<<"# Skyrim\n\n"
 		<<"## Mods\n\n";
 	
-	//output << filterCategories(data.mods, game, categoryFilterList, categoryFilterOR, categoryColumns).rdbuf();
-	
 	output << data.filterCategories(categoryFilterList, categoryFilterOR, categoryColumns).rdbuf();
 
-	//output << modMasterList(data.mods, game, categoryMasterList, generalColumns).rdbuf();
-	
-	output << data.modMasterList(categoryMasterList, generalColumns).rdbuf();
+	output << data.modMasterList(generalColumns).rdbuf();
 
-	output << categoryList(categoryMasterList).rdbuf();
+	output << data.categoryList().rdbuf();
 
 	ofile << output.rdbuf();
 
