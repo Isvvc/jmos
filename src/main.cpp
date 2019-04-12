@@ -88,6 +88,7 @@ int main(int argc, char* argv[]){
 
 	if(result.count("game")){
 		game = result["game"].as<string>();
+		transform(game.begin(), game.end(), game.begin(), ::tolower);
 	}else if(config.getStringValue("game")[0] != '\0'){
 		game = config.getStringValue("game");
 	}else{
