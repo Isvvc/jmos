@@ -138,7 +138,8 @@ stringstream jmos::filterCategories(){
 		bool valid = category.OR?false:true;
 
 		for(json::iterator jt = category.list.begin(); jt != category.list.end(); jt++){
-			if(jsonListContains(it.value()["categories"], jt.value())){
+			if(jsonListContains(it.value()["categories"], jt.value())
+					&& !it.value()["id"][game].is_null() ){
 				if(category.OR){
 					valid = true;
 					break;
