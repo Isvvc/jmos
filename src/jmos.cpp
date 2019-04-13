@@ -22,7 +22,12 @@ string jmos::url(URLs type, string game){
 
 // Format a json string for printing
 string jmos::p(json input){
-	string text = input;
+	string text;
+	if(input.is_number()){
+		text = to_string(input.get<int>());
+	}else{
+		text = input;
+	}
 	text.erase(
 		remove (text.begin(), text.end(), '\"'),
 		text.end());
@@ -213,7 +218,38 @@ stringstream jmos::modMasterList(){
 				}
 			}
 
-			output<<"\n\nCategories:\n\n";
+			output <<"\n\n##### Modules";
+			for(json::iterator jt = it.value()["modules"].begin();
+					jt != it.value()["modules"].end();
+					++jt){
+				output <<"\n\n###### "<< p(jt.value()["name"]) <<"\n";
+
+				for(json::iterator kt = jt.value()["types"].begin();
+						kt != jt.value()["types"].end();
+						++kt){
+					output <<"\n* "<< p(kt.value());
+				}
+				
+				for(json::iterator kt = jt.value()["attributes"].begin();
+						kt != jt.value()["attributes"].end();
+						++kt){
+					output <<"\n* "<< p(kt.key()) <<": "<< p(kt.value());
+				}
+
+				if(!jt.value()["crafting"].is_null()){
+					output <<"\n\n| Ingredients | Qty. |";
+					output <<"\n|---|:---:|";
+
+					for(json::iterator kt = jt.value()["crafting"].begin();
+							kt != jt.value()["crafting"].end();
+							++kt){
+						output <<"\n| "<< p(kt.key()) <<" | "<< p(kt.value()) <<"|";
+					}
+				}
+
+			}
+
+			output<<"\n\n##### Categories\n\n";
 			for(json::iterator jt = it.value()["categories"].begin();
 					jt != it.value()["categories"].end();
 					++jt){
