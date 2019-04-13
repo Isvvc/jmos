@@ -101,7 +101,7 @@ The json dictionary should be structed as shown below. `"id"` and `"author id"` 
           },
           "crafting": {
             "component 1": 1,
-            "component 2": 2,
+            "component 2": 2
           }
         }
       ]
