@@ -87,7 +87,7 @@ The json dictionary should be structed as shown below. `"id"` and `"author id"` 
       "categories": [
         "Category 1",
         "Category 2"
-      ]
+      ],
       "modules": [
         {
           "name": "module name",
