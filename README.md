@@ -59,7 +59,7 @@ The easiest way to add a new game manually would be by using a JSON validator su
 
 ## Database
 
-This project uses json for data storage. There is not yet an official implementation for creating databases. I personally use Shortcuts on iOS with Nexusmods scraping. These shortcuts might be released at a future time.
+This project uses json for data storage. There is included a very simple and poorly-written Python 3 GUI for adding mods to a database. It can be found in the `python` folder. It does not support lists, so only one game ID, image, and category can be specified at the current time. If you are going to use this, run it in a terminal as it does not write to the databse file. Becuase I am unsure of its stability, it is written to output the final json to the terminal standard output, rather than overwriting the file, when the window is closed, which can then be copyed and pasted into a database file. There is no feedback when you press the "Submit" button.
 
 The json dictionary should be structed as shown below. `"id"` and `"author id"` should be the Nexusmods IDs. Structure likely to change as program develops.
 
